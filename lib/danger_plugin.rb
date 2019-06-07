@@ -1,0 +1,1 @@
+require "shroud/plugin"
