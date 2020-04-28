@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Shroud::VERSION
   spec.authors       = ['andrewhaisting']
   spec.email         = ['ahaisting@gmail.com']
-  spec.description   = %q{Report test coverage on Android PRs.}
-  spec.summary       = %q{Shroud is a danger plugin that parses a jacococo coverage report to display on your team's PRs.}
-  spec.homepage      = 'https://github.com/andrewhaisting/danger-shroud'
+  spec.description   = %q{Enforce Jacoco code coverage on CI.}
+  spec.summary       = %q{A danger plugin for enforcing code coverage via a Jacoco coverage report.}
+  spec.homepage      = 'https://github.com/livefront/livefront-shroud-android'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
