@@ -1,27 +1,53 @@
 require 'nokogiri'
 
 module Danger
-  # This is your plugin class. Any attributes or methods you expose here will
-  # be available from within your Dangerfile.
+
+  # Parse a Jacoco report to enforce code coverage on CI. Results are passed out as a table in markdown.
   #
-  # To be published on the Danger plugins site, you will need to have
-  # the public interface documented. Danger uses [YARD](http://yardoc.org/)
-  # for generating documentation from your plugin source, and you can verify
-  # by running `danger plugins lint` or `bundle exec rake spec`.
+  # Shroud depends on having a Jacoco coverage report generated for your project. For Android projects, 
+  # [jacoco-android-gradle-plugin](https://github.com/arturdm/jacoco-android-gradle-plugin) works well. 
   #
-  # You should replace these comments with a public description of your library.
+  # @example Running shroud with default values
+  #
+  #          # Report coverage of modified files, fail if either total project coverage
+  #          # or any modified file's coverage is under 90%
+  #          shroud.report 'path/to/jacoco/report.xml'
+  #
+  # @example Running shroud with custom coverage thresholds
+  #
+  #          # Report coverage of modified files, fail if total project coverage is under 80%,
+  #          # or if any modified file's coverage is under 95%
+  #          shroud.report 'path/to/jacoco/report.xml', 80, 95
+  #
+  # @example Warn on builds instead of fail
+  #
+  #          # Report coverage of modified files the same as the above example, except the
+  #          # builds will only warn instead of fail if below thresholds
+  #          shroud.report 'path/to/jacoco/report.xml', 80, 95, false
+  #          
+  # @tags android, jacoco, coverage
   #
   class DangerShroud < Plugin
 
-    # Report coverage on diffed files, as well as overall coverage. 
-    # 
-    # file should reference a jacoco xml coverage report.
-    # totalProjectThreshold defines the threshold at which a warning will be emitted on total project coverage. deafult 0.
-    # modifiedFileThreshold defines the threshold at which a warning will be emitted on each modified file's coverage. default 0.
-    # failIfUnderThreshold when set to true will fail builds that fall under the above thresholds. default is false, which will warn.
+    # Report coverage on diffed files, as well as overall coverage.
     #
-    # @return   [void]
-    def report(file, totalProjectThreshold = 0, modifiedFileThreshold = 0, failIfUnderThreshold = false)
+    # @param   [String] file
+    #          file path to a Jacoco xml coverage report.
+    #
+    # @param   [Integer] totalProjectThreshold
+    #          defines the required percentage of total project coverage for a passing build.
+    #          default 90.
+    #
+    # @param   [Integer] modifiedFileThreshold
+    #          defines the required percentage of files modified in a PR for a passing build.
+    #          default 90.
+    #
+    # @param   [Boolean] failIfUnderThreshold
+    #          if true, will fail builds that are under the provided thresholds. if false, will only warn.
+    #          default true.
+    #
+    # @return  [void]
+    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderThreshold = true)
       raise "Please specify file name." if file.empty?
       raise "No jacoco xml report found at #{file}" unless File.exist? file
       rawXml = File.read(file)
