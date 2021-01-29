@@ -72,7 +72,7 @@ GEM
     nap (1.1.0)
     nenv (0.3.0)
     no_proxy_fix (0.1.2)
-    nokogiri (1.10.9)
+    nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -129,7 +129,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.3)
+  bundler (~> 2.2)
   danger-shroud!
   guard (~> 2.14)
   guard-rspec (~> 4.7)
@@ -139,3 +139,6 @@ DEPENDENCIES
   rspec (~> 3.4)
   rubocop
   yard
+
+BUNDLED WITH
+   2.2.7
