@@ -123,7 +123,7 @@ GEM
       unicode-display_width (~> 1.1, >= 1.1.1)
     thor (0.20.3)
     unicode-display_width (1.6.0)
-    yard (0.9.19)
+    yard (0.9.26)
 
 PLATFORMS
   ruby
