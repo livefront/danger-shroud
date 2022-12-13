@@ -190,7 +190,7 @@ module Danger
         output << "#{unreportedFileName}\n"
       end
 
-      output << '> Codebase cunningly covered by count [Shroud 🧛](https://github.com/livefront/livefront-shroud-android/)'
+      output << '> Codebase cunningly covered by count [Shroud 🧛](https://github.com/livefront/danger-shroud)'
       markdown output
 
       # warn or fail if total coverage is under specified threshold

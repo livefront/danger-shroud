@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-shroud (0.0.5)
+    danger-shroud (0.0.6)
       danger-plugin-api (~> 1.0)
       nokogiri
 
