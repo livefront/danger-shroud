@@ -71,7 +71,7 @@ module Danger
     #          default true.
     #
     # @return  [void]
-    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = true)
+    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
       warn "[DEPRECATION] `report` is deprecated.  Please use `reportJacoco` or `reportKover` instead."
       reportJacoco('Project', file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold, failIfUnderFileThreshold)
     end
@@ -130,7 +130,7 @@ module Danger
     #          default true.
     #
     # @return  [void]
-    def reportKover(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = true)
+    def reportKover(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
       internalReport('Kover', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
     end
 
