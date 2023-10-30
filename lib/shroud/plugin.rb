@@ -23,7 +23,7 @@ module Danger
   #
   #          # Report coverage of modified files the same as the above example, except the
   #          # builds will only warn instead of fail if below thresholds
-  #          shroud.reportKover 'Project Name', 'path/to/kover/report.xml', 80, 95, false
+  #          shroud.reportKover 'Project Name', 'path/to/kover/report.xml', 80, 95, false, false
   #
   # @example Running Shroud with default values for Jacoco
   #
@@ -41,7 +41,7 @@ module Danger
   #
   #          # Report coverage of modified files the same as the above example, except the
   #          # builds will only warn instead of fail if below thresholds
-  #          shroud.reportJacoco 'Project Name', 'path/to/jacoco/report.xml', 80, 95, false
+  #          shroud.reportJacoco 'Project Name', 'path/to/jacoco/report.xml', 80, 95, false, false
   #          
   # @tags android, kover, jacoco, coverage
   #
@@ -62,14 +62,18 @@ module Danger
     #          defines the required percentage of files modified in a PR for a passing build.
     #          default 90.
     #
-    # @param   [Boolean] failIfUnderThreshold
-    #          if true, will fail builds that are under the provided thresholds. if false, will only warn.
+    # @param   [Boolean] failIfUnderProjectThreshold
+    #          if true, will fail builds that are under the provided thresholds for the overall project. If false, will only warn.
+    #          default true.
+    #
+    # @param   [Boolean] failIfUnderFileThreshold
+    #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
     # @return  [void]
-    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderThreshold = true)
+    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
       warn "[DEPRECATION] `report` is deprecated.  Please use `reportJacoco` or `reportKover` instead."
-      reportJacoco('Project', file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderThreshold = true)
+      reportJacoco('Project', file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold, failIfUnderFileThreshold)
     end
 
     # Report coverage on diffed files, as well as overall coverage.
@@ -88,13 +92,17 @@ module Danger
     #          defines the required percentage of files modified in a PR for a passing build.
     #          default 90.
     #
-    # @param   [Boolean] failIfUnderThreshold
-    #          if true, will fail builds that are under the provided thresholds. if false, will only warn.
+    # @param   [Boolean] failIfUnderProjectThreshold
+    #          if true, will fail builds that are under the provided thresholds for the overall project. If false, will only warn.
+    #          default true.
+    #
+    # @param   [Boolean] failIfUnderFileThreshold
+    #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
     # @return  [void]
-    def reportJacoco(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderThreshold = true)
-      internalReport('Jacoco', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderThreshold)
+    def reportJacoco(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = false)
+      internalReport('Jacoco', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
     end
 
     # Report coverage on diffed files, as well as overall coverage.
@@ -113,16 +121,20 @@ module Danger
     #          defines the required percentage of files modified in a PR for a passing build.
     #          default 90.
     #
-    # @param   [Boolean] failIfUnderThreshold
-    #          if true, will fail builds that are under the provided thresholds. if false, will only warn.
+    # @param   [Boolean] failIfUnderProjectThreshold
+    #          if true, will fail builds that are under the provided thresholds for the overall project. If false, will only warn.
+    #          default true.
+    #
+    # @param   [Boolean] failIfUnderFileThreshold
+    #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
     # @return  [void]
-    def reportKover(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderThreshold = true)
-      internalReport('Kover', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderThreshold)
+    def reportKover(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
+      internalReport('Kover', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
     end
 
-    private def internalReport(reportType, moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderThreshold)
+    private def internalReport(reportType, moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
       raise "Please specify file name." if file.empty?
       raise "No #{reportType} xml report found at #{file}" unless File.exist? file
       rawXml = File.read(file)
@@ -177,7 +189,7 @@ module Danger
         # warn or fail if under specified file threshold:
         if (coveragePercent < modifiedFileThreshold)
           warningMessage = "Uh oh! #{fileName} is under #{modifiedFileThreshold}% coverage!"
-          if (failIfUnderThreshold)
+          if (failIfUnderFileThreshold)
             fail warningMessage
           else 
             warn warningMessage
@@ -196,7 +208,7 @@ module Danger
       # warn or fail if total coverage is under specified threshold
       if (coveragePercent < totalProjectThreshold)
         totalCoverageWarning = "Uh oh! Your project is under #{totalProjectThreshold}% coverage!"
-        if (failIfUnderThreshold) 
+        if (failIfUnderProjectThreshold) 
           fail totalCoverageWarning
         else 
           warn totalCoverageWarning
