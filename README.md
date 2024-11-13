@@ -39,6 +39,7 @@ You can use the following parameters to control how shroud operates:
 | modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                 |
 | failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
 | failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
+| coverageType                | enum    | the type of coverage to use (:branch, :class, :instruction, :line, and :method).            | default `:instruction`       |
 
 ### Examples
 
@@ -80,6 +81,7 @@ You can use the following parameters to control how shroud operates:
 | modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                  |
 | failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
 | failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
+| coverageType                | enum    | the type of coverage to use (:branch, :class, :instruction, :line, and :method).            | default `:instruction`        |
 
 ### Examples
 
