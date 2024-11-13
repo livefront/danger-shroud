@@ -47,6 +47,24 @@ module Danger
   #
   class DangerShroud < Plugin
 
+    # Defines the method of coverage to be used
+    #
+    # * Branch
+    # * Class
+    # * Instruction
+    # * Line
+    # * Method
+    #
+    # @example
+    #   COVERAGE_TYPE[:line] #=> 'LINE'
+    COVERAGE_TYPE = {
+      branch: 'BRANCH',
+      class: 'CLASS',
+      instruction: 'INSTRUCTION',
+      line: 'LINE',
+      method: 'METHOD'
+    }.freeze
+
     # Report coverage on diffed files, as well as overall coverage.
     #
     # @param   [String] moduleName
@@ -71,6 +89,10 @@ module Danger
     #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
+    # @param   [Symbol] coverageType
+    #          defines the type of coverage to use.
+    #          default line.
+    #
     # @return  [void]
     def reportJacoco(
       moduleName:,
@@ -78,7 +100,8 @@ module Danger
       totalProjectThreshold: 90,
       modifiedFileThreshold: 90,
       failIfUnderProjectThreshold: true,
-      failIfUnderFileThreshold: failIfUnderProjectThreshold
+      failIfUnderFileThreshold: failIfUnderProjectThreshold,
+      coverageType: :line
     )
       internalReport(
         reportType: 'Jacoco',
@@ -87,7 +110,8 @@ module Danger
         totalProjectThreshold: totalProjectThreshold,
         modifiedFileThreshold: modifiedFileThreshold,
         failIfUnderProjectThreshold: failIfUnderProjectThreshold,
-        failIfUnderFileThreshold: failIfUnderFileThreshold
+        failIfUnderFileThreshold: failIfUnderFileThreshold,
+        coverageType: coverageType
       )
     end
 
@@ -115,6 +139,10 @@ module Danger
     #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
+    # @param   [Symbol] coverageType
+    #          defines the type of coverage to use.
+    #          default line.
+    #
     # @return  [void]
     def reportKover(
       moduleName:,
@@ -122,7 +150,8 @@ module Danger
       totalProjectThreshold: 90,
       modifiedFileThreshold: 90,
       failIfUnderProjectThreshold: true,
-      failIfUnderFileThreshold: failIfUnderProjectThreshold
+      failIfUnderFileThreshold: failIfUnderProjectThreshold,
+      coverageType: :line
     )
       internalReport(
         reportType: 'Kover',
@@ -131,7 +160,8 @@ module Danger
         totalProjectThreshold: totalProjectThreshold,
         modifiedFileThreshold: modifiedFileThreshold,
         failIfUnderProjectThreshold: failIfUnderProjectThreshold,
-        failIfUnderFileThreshold: failIfUnderFileThreshold
+        failIfUnderFileThreshold: failIfUnderFileThreshold,
+        coverageType: coverageType
       )
     end
 
@@ -142,13 +172,16 @@ module Danger
       totalProjectThreshold:,
       modifiedFileThreshold:,
       failIfUnderProjectThreshold:,
-      failIfUnderFileThreshold:
+      failIfUnderFileThreshold:,
+      coverageType:
     )
       raise "Please specify file name." if file.empty?
       raise "No #{reportType} xml report found at #{file}" unless File.exist? file
+      coverageMethod = COVERAGE_TYPE[coverageType]
+      raise "Undefined coverage type" if coverageMethod.nil?
       rawXml = File.read(file)
       parsedXml = Nokogiri::XML.parse(rawXml)
-      totalInstructionCoverage = parsedXml.xpath("/report/counter[@type='INSTRUCTION']")
+      totalInstructionCoverage = parsedXml.xpath("/report/counter[@type='#{coverageMethod}']")
       missed = totalInstructionCoverage.attr("missed").value.to_i
       covered = totalInstructionCoverage.attr("covered").value.to_i
       total = missed + covered
@@ -165,7 +198,7 @@ module Danger
       touchedFilesHash = {}
 
       touchedFileNames.each do |touchedFileName|
-        xmlForFileName = parsedXml.xpath("//class[@sourcefilename='#{touchedFileName}']/counter[@type='INSTRUCTION']")
+        xmlForFileName = parsedXml.xpath("//class[@sourcefilename='#{touchedFileName}']/counter[@type='#{coverageMethod}']")
 
         if (xmlForFileName.length > 0)
           missed = 0
