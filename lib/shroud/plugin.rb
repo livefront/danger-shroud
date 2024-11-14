@@ -11,41 +11,59 @@ module Danger
   #
   #          # Report coverage of modified files, fail if either total project coverage
   #          # or any modified file's coverage is under 90%
-  #          shroud.reportKover 'Project Name', 'path/to/kover/report.xml'
+  #          shroud.reportKover moduleName: 'Project Name', file: 'path/to/kover/report.xml'
   #
   # @example Running Shroud with custom coverage thresholds for Kover
   #
   #          # Report coverage of modified files, fail if total project coverage is under 80%,
   #          # or if any modified file's coverage is under 95%
-  #          shroud.reportKover 'Project Name', 'path/to/kover/report.xml', 80, 95
+  #          shroud.reportKover moduleName: 'Project Name', file: 'path/to/kover/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95
   #
   # @example Warn on builds instead of fail for Kover
   #
   #          # Report coverage of modified files the same as the above example, except the
   #          # builds will only warn instead of fail if below thresholds
-  #          shroud.reportKover 'Project Name', 'path/to/kover/report.xml', 80, 95, false, false
+  #          shroud.reportKover moduleName: 'Project Name', file: 'path/to/kover/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95, failIfUnderProjectThreshold: false, failIfUnderFileThreshold: false
   #
   # @example Running Shroud with default values for Jacoco
   #
   #          # Report coverage of modified files, fail if either total project coverage
   #          # or any modified file's coverage is under 90%
-  #          shroud.reportJacoco 'Project Name', 'path/to/jacoco/report.xml'
+  #          shroud.reportJacoco moduleName: 'Project Name', file: 'path/to/jacoco/report.xml'
   #
   # @example Running Shroud with custom coverage thresholds for Jacoco
   #
   #          # Report coverage of modified files, fail if total project coverage is under 80%,
   #          # or if any modified file's coverage is under 95%
-  #          shroud.reportJacoco 'Project Name', 'path/to/jacoco/report.xml', 80, 95
+  #          shroud.reportJacoco moduleName: 'Project Name', file: 'path/to/jacoco/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95
   #
   # @example Warn on builds instead of fail for Jacoco
   #
   #          # Report coverage of modified files the same as the above example, except the
   #          # builds will only warn instead of fail if below thresholds
-  #          shroud.reportJacoco 'Project Name', 'path/to/jacoco/report.xml', 80, 95, false, false
+  #          shroud.reportJacoco moduleName: 'Project Name', file: 'path/to/jacoco/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95, failIfUnderProjectThreshold: false, failIfUnderFileThreshold: false
   #          
   # @tags android, kover, jacoco, coverage
   #
   class DangerShroud < Plugin
+
+    # Defines the method of coverage to be used
+    #
+    # * Branch
+    # * Class
+    # * Instruction
+    # * Line
+    # * Method
+    #
+    # @example
+    #   COVERAGE_TYPE[:line] #=> 'LINE'
+    COVERAGE_TYPE = {
+      branch: 'BRANCH',
+      class: 'CLASS',
+      instruction: 'INSTRUCTION',
+      line: 'LINE',
+      method: 'METHOD'
+    }.freeze
 
     # Report coverage on diffed files, as well as overall coverage.
     #
@@ -71,9 +89,30 @@ module Danger
     #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
+    # @param   [Symbol] coverageType
+    #          defines the type of coverage to use.
+    #          default instruction.
+    #
     # @return  [void]
-    def reportJacoco(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = false)
-      internalReport('Jacoco', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
+    def reportJacoco(
+      moduleName:,
+      file:,
+      totalProjectThreshold: 90,
+      modifiedFileThreshold: 90,
+      failIfUnderProjectThreshold: true,
+      failIfUnderFileThreshold: failIfUnderProjectThreshold,
+      coverageType: :instruction
+    )
+      internalReport(
+        reportType: 'Jacoco',
+        moduleName: moduleName,
+        file: file,
+        totalProjectThreshold: totalProjectThreshold,
+        modifiedFileThreshold: modifiedFileThreshold,
+        failIfUnderProjectThreshold: failIfUnderProjectThreshold,
+        failIfUnderFileThreshold: failIfUnderFileThreshold,
+        coverageType: coverageType
+      )
     end
 
     # Report coverage on diffed files, as well as overall coverage.
@@ -100,17 +139,49 @@ module Danger
     #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
     #          default true.
     #
+    # @param   [Symbol] coverageType
+    #          defines the type of coverage to use.
+    #          default instruction.
+    #
     # @return  [void]
-    def reportKover(moduleName, file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
-      internalReport('Kover', moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
+    def reportKover(
+      moduleName:,
+      file:,
+      totalProjectThreshold: 90,
+      modifiedFileThreshold: 90,
+      failIfUnderProjectThreshold: true,
+      failIfUnderFileThreshold: failIfUnderProjectThreshold,
+      coverageType: :instruction
+    )
+      internalReport(
+        reportType: 'Kover',
+        moduleName: moduleName,
+        file: file,
+        totalProjectThreshold: totalProjectThreshold,
+        modifiedFileThreshold: modifiedFileThreshold,
+        failIfUnderProjectThreshold: failIfUnderProjectThreshold,
+        failIfUnderFileThreshold: failIfUnderFileThreshold,
+        coverageType: coverageType
+      )
     end
 
-    private def internalReport(reportType, moduleName, file, totalProjectThreshold, modifiedFileThreshold, failIfUnderProjectThreshold, failIfUnderFileThreshold)
+    private def internalReport(
+      reportType:,
+      moduleName:,
+      file:,
+      totalProjectThreshold:,
+      modifiedFileThreshold:,
+      failIfUnderProjectThreshold:,
+      failIfUnderFileThreshold:,
+      coverageType:
+    )
       raise "Please specify file name." if file.empty?
       raise "No #{reportType} xml report found at #{file}" unless File.exist? file
+      coverageMethod = COVERAGE_TYPE[coverageType]
+      raise "Undefined coverage type" if coverageMethod.nil?
       rawXml = File.read(file)
       parsedXml = Nokogiri::XML.parse(rawXml)
-      totalInstructionCoverage = parsedXml.xpath("/report/counter[@type='INSTRUCTION']")
+      totalInstructionCoverage = parsedXml.xpath("/report/counter[@type='#{coverageMethod}']")
       missed = totalInstructionCoverage.attr("missed").value.to_i
       covered = totalInstructionCoverage.attr("covered").value.to_i
       total = missed + covered
@@ -127,7 +198,7 @@ module Danger
       touchedFilesHash = {}
 
       touchedFileNames.each do |touchedFileName|
-        xmlForFileName = parsedXml.xpath("//class[@sourcefilename='#{touchedFileName}']/counter[@type='INSTRUCTION']")
+        xmlForFileName = parsedXml.xpath("//class[@sourcefilename='#{touchedFileName}']/counter[@type='#{coverageMethod}']")
 
         if (xmlForFileName.length > 0)
           missed = 0
