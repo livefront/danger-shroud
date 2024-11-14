@@ -47,35 +47,6 @@ module Danger
   #
   class DangerShroud < Plugin
 
-    # <b>DEPRECATED:</b> Please use <tt>reportJacoco</tt> or <tt>reportKover</tt> instead.
-    #
-    # Report coverage on diffed files, as well as overall coverage.
-    #
-    # @param   [String] file
-    #          file path to a Jacoco xml coverage report.
-    #
-    # @param   [Integer] totalProjectThreshold
-    #          defines the required percentage of total project coverage for a passing build.
-    #          default 90.
-    #
-    # @param   [Integer] modifiedFileThreshold
-    #          defines the required percentage of files modified in a PR for a passing build.
-    #          default 90.
-    #
-    # @param   [Boolean] failIfUnderProjectThreshold
-    #          if true, will fail builds that are under the provided thresholds for the overall project. If false, will only warn.
-    #          default true.
-    #
-    # @param   [Boolean] failIfUnderFileThreshold
-    #          if true, will fail builds that are under the provided thresholds per file. If false, will only warn.
-    #          default true.
-    #
-    # @return  [void]
-    def report(file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold = true, failIfUnderFileThreshold = failIfUnderProjectThreshold)
-      warn "[DEPRECATION] `report` is deprecated.  Please use `reportJacoco` or `reportKover` instead."
-      reportJacoco('Project', file, totalProjectThreshold = 90, modifiedFileThreshold = 90, failIfUnderProjectThreshold, failIfUnderFileThreshold)
-    end
-
     # Report coverage on diffed files, as well as overall coverage.
     #
     # @param   [String] moduleName
