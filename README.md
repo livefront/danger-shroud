@@ -31,14 +31,14 @@ Shroud depends on having a Kover coverage report generated for your project. For
 
 You can use the following parameters to control how shroud operates:
 
-Param | Type | Description | Example
----|---|---|---|
-moduleName | String | the display name of the project or module |`'Module Name '`
-file | String | file path to a Kover xml coverage report. | `'path/to/kover/report.xml'`
-totalProjectThreshold | Integer | defines the required percentage of total project coverage for a passing build. | default `90`
-modifiedFileThreshold | Integer | defines the required percentage of files modified in a PR for a passing build. | default `90`
-failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`
-failIfUnderFileThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`
+| Param                       | Type    | Description                                                                                 | Example                      |
+|-----------------------------|---------|---------------------------------------------------------------------------------------------|------------------------------|
+| moduleName                  | String  | the display name of the project or module.                                                  | `'Module Name '`             |
+| file                        | String  | file path to a Kover xml coverage report.                                                   | `'path/to/kover/report.xml'` |
+| totalProjectThreshold       | Integer | defines the required percentage of total project coverage for a passing build.              | default `90`                 |
+| modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                 |
+| failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
+| failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
 
 ### Examples
 
@@ -47,7 +47,7 @@ Running shroud with default values:
 ```ruby
 # Report coverage of modified files, fail if either total 
 # project coverage or any modified file's coverage is under 90%
-shroud.reportKover 'Module Name', 'path/to/kover/report.xml'
+shroud.reportKover moduleName: 'Module Name', file: 'path/to/kover/report.xml'
 ```
 
 Running shroud with custom coverage thresholds:
@@ -55,7 +55,7 @@ Running shroud with custom coverage thresholds:
 ```ruby
 # Report coverage of modified files, fail if total project coverage is under 80%,
 # or if any modified file's coverage is under 95%
-shroud.reportKover 'Module Name', 'path/to/kover/report.xml', 80, 95
+shroud.reportKover moduleName: 'Module Name', file: 'path/to/kover/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95
 ```
 
 Warn on builds instead of fail:
@@ -63,7 +63,7 @@ Warn on builds instead of fail:
 ```ruby
 # Report coverage of modified files the same as the above example, except the
 # builds will only warn instead of fail if below project thresholds
-shroud.reportKover 'Module Name', 'path/to/kover/report.xml', 80, 95, false, false
+shroud.reportKover moduleName: 'Module Name', file: 'path/to/kover/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95, failIfUnderProjectThreshold: false, failIfUnderFileThreshold: false
 ```
 
 ## Usage Jacoco
@@ -72,14 +72,14 @@ shroud.reportKover 'Module Name', 'path/to/kover/report.xml', 80, 95, false, fal
 
 You can use the following parameters to control how shroud operates:
 
-Param | Type | Description | Example
----|---|---|---|
-moduleName | String | the display name of the project or module |`'Module Name '`
-file | String | file path to a Kover xml coverage report. | `'path/to/jacoco/report.xml'`
-totalProjectThreshold | Integer | defines the required percentage of total project coverage for a passing build. | default `90`
-modifiedFileThreshold | Integer | defines the required percentage of files modified in a PR for a passing build. | default `90`
-failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`
-failIfUnderFileThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`
+| Param                       | Type    | Description                                                                                 | Example                       |
+|-----------------------------|---------|---------------------------------------------------------------------------------------------|-------------------------------|
+| moduleName                  | String  | the display name of the project or module.                                                  | `'Module Name '`              |
+| file                        | String  | file path to a Jacoco xml coverage report.                                                  | `'path/to/jacoco/report.xml'` |
+| totalProjectThreshold       | Integer | defines the required percentage of total project coverage for a passing build.              | default `90`                  |
+| modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                  |
+| failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
+| failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
 
 ### Examples
 
@@ -90,7 +90,7 @@ Running shroud with default values:
 ```ruby
 # Report coverage of modified files, fail if either total 
 # project coverage or any modified file's coverage is under 90%
-shroud.reportJacoco 'Module Name', 'path/to/jacoco/report.xml'
+shroud.reportJacoco moduleName: 'Module Name', file: 'path/to/jacoco/report.xml'
 ```
 
 Running shroud with custom coverage thresholds:
@@ -98,7 +98,7 @@ Running shroud with custom coverage thresholds:
 ```ruby
 # Report coverage of modified files, fail if total project coverage is under 80%,
 # or if any modified file's coverage is under 95%
-shroud.reportJacoco 'Module Name', 'path/to/jacoco/report.xml', 80, 95
+shroud.reportJacoco moduleName: 'Module Name', file: 'path/to/jacoco/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95
 ```
 
 Warn on builds instead of fail:
@@ -106,7 +106,7 @@ Warn on builds instead of fail:
 ```ruby
 # Report coverage of modified files the same as the above example, except the
 # builds will only warn instead of fail if below thresholds
-shroud.reportJacoco 'Module Name', 'path/to/jacoco/report.xml', 80, 95, false, false
+shroud.reportJacoco moduleName: 'Module Name', file: 'path/to/jacoco/report.xml', totalProjectThreshold: 80, modifiedFileThreshold: 95, failIfUnderProjectThreshold: false, failIfUnderFileThreshold: false
 ```
 
 ## Development
