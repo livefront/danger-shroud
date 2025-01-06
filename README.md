@@ -8,6 +8,7 @@
     - [Parameters](#parameters-1)
     - [Examples](#examples-1)
   - [Development](#development)
+  - [Versioning](#versioning)
 
 # danger-shroud
 
@@ -39,6 +40,7 @@ You can use the following parameters to control how shroud operates:
 | modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                 |
 | failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
 | failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`               |
+| coverageType                | enum    | the type of coverage to use (:branch, :class, :instruction, :line, and :method).            | default `:line`       |
 
 ### Examples
 
@@ -80,6 +82,7 @@ You can use the following parameters to control how shroud operates:
 | modifiedFileThreshold       | Integer | defines the required percentage of files modified in a PR for a passing build.              | default `90`                  |
 | failIfUnderProjectThreshold | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
 | failIfUnderFileThreshold    | Boolean | if true, will fail builds that are under the provided thresholds. if false, will only warn. | default `true`                |
+| coverageType                | enum    | the type of coverage to use (:branch, :class, :instruction, :line, and :method).            | default `:line`        |
 
 ### Examples
 
@@ -116,3 +119,23 @@ shroud.reportJacoco moduleName: 'Module Name', file: 'path/to/jacoco/report.xml'
 3. Run `bundle exec rake spec` to run the tests.
 4. Use `bundle exec guard` to automatically have tests run as you make changes.
 5. Make your changes.
+
+## Versioning
+
+This repository conforms to the semantic versioning convention:
+
+```
+v[MAJOR].[MINOR].[PATCH]
+```
+
+where
+
+      [MAJOR]   is incremented when an incompatible API change is made or a major milestone that significantly changes the library is achieved.
+
+      [MINOR]   is incremented when new functionality is introduced in a backward-compatible manner.
+
+      [PATCH]   is incremented when a backward-compatible bug fix is introduced.
+
+All updates should have a corresponding CHANGELOG.md entry that at a high-level describes what is being newly introduced in it.
+
+When incrementing a level any lower-levels should always reset to 0.
