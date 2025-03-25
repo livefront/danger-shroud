@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 env:
-  RUBY_VERSION: 2.7.2
+  RUBY_VERSION: 3.1.0
 
 jobs:
   build:
