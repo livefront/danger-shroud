@@ -234,6 +234,11 @@ module Danger
         end
       end
 
+      # don't output anything when the module has no touched files
+      if (touchedFilesHash.empty?)
+        return
+      end
+
       puts "Here are unreported files"
       puts fileNamesNotInReport.to_s
       puts "Here is the touched files coverage hash"
