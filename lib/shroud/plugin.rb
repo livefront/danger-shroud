@@ -68,7 +68,11 @@ module Danger
     # Report coverage on diffed files, as well as overall coverage.
     #
     # @param   [String] moduleName
-    #          the display name of the project or module
+    #          the display name of the project or module.
+    #
+    # @param   [String, nil] moduleDirectory
+    #          file path to the module to specify its location when its report `file` outputs to a custom directory.
+    #          default nil.
     #
     # @param   [String] file
     #          file path to a Jacoco xml coverage report.
@@ -96,6 +100,7 @@ module Danger
     # @return  [void]
     def reportJacoco(
       moduleName:,
+      moduleDirectory: nil,
       file:,
       totalProjectThreshold: 90,
       modifiedFileThreshold: 90,
@@ -106,6 +111,7 @@ module Danger
       internalReport(
         reportType: 'Jacoco',
         moduleName: moduleName,
+        moduleDirectory: moduleDirectory,
         file: file,
         totalProjectThreshold: totalProjectThreshold,
         modifiedFileThreshold: modifiedFileThreshold,
@@ -118,7 +124,11 @@ module Danger
     # Report coverage on diffed files, as well as overall coverage.
     #
     # @param   [String] moduleName
-    #          the display name of the project or module
+    #          the display name of the project or module.
+    #
+    # @param   [String, nil] moduleDirectory
+    #          file path to the module to specify its location when its report `file` outputs to a custom directory.
+    #          default nil.
     #
     # @param   [String] file
     #          file path to a Kover xml coverage report.
@@ -146,6 +156,7 @@ module Danger
     # @return  [void]
     def reportKover(
       moduleName:,
+      moduleDirectory: nil,
       file:,
       totalProjectThreshold: 90,
       modifiedFileThreshold: 90,
@@ -156,6 +167,7 @@ module Danger
       internalReport(
         reportType: 'Kover',
         moduleName: moduleName,
+        moduleDirectory: moduleDirectory,
         file: file,
         totalProjectThreshold: totalProjectThreshold,
         modifiedFileThreshold: modifiedFileThreshold,
@@ -168,6 +180,7 @@ module Danger
     private def internalReport(
       reportType:,
       moduleName:,
+      moduleDirectory:,
       file:,
       totalProjectThreshold:,
       modifiedFileThreshold:,
@@ -187,9 +200,17 @@ module Danger
       total = missed + covered
       coveragePercent = (covered / total.to_f) * 100
 
-      # get array of files names touched by this PR (modified + added)
-      touchedFileNames = @dangerfile.git.modified_files.map { |file| File.basename(file) }
-      touchedFileNames += @dangerfile.git.added_files.map { |file| File.basename(file) }
+      # if we are provided an explicit path to the module directory, use that.
+      # the default location for a Kover or Jacoco report is in the build directory of the module.
+      # if we're in the build directory then we can determine the module's file path for sorting.
+      modulePath = moduleDirectory || (file.include?('/build/') ? file.split('/build/').first + '/' : nil)
+
+      # get array of files names within the specified module touched by this PR (modified + added).
+      # if we have the path of the module, use that to filter the files, otherwise fallback to
+      # the previous behavior when it can't be determined.
+      touchedFileNames = (@dangerfile.git.modified_files + @dangerfile.git.added_files)
+        .select { |path| modulePath.nil? || path.start_with?(modulePath) }
+        .map { |path| File.basename(path) }
 
       # used to later report files that were modified but not included in the report
       fileNamesNotInReport = []
@@ -211,6 +232,11 @@ module Danger
         else
           fileNamesNotInReport << touchedFileName
         end
+      end
+
+      # don't output anything when the module has no touched files
+      if (touchedFilesHash.empty?)
+        return
       end
 
       puts "Here are unreported files"
