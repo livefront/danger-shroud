@@ -4,6 +4,11 @@ Change Log
 Version Next
 ----------------------------
 
+Version 2.1.0
+----------------------------
+* Filters touched files by module
+* Hides modules from report output when they have no changed files.
+
 Version 2.0.0
 ----------------------------
 * Upgrade to Ruby 3.1.0
